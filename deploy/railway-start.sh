@@ -13,9 +13,10 @@ fi
 rm -rf /MoneyPrinterTurbo/storage
 ln -s /data/storage /MoneyPrinterTurbo/storage
 
-printf '%s\n' "$APP_PASSWORD" | htpasswd -iB -c /etc/nginx/.htpasswd "$APP_USERNAME" >/dev/null
-nginx -t
-nginx
+APP_PASSWORD_HASH="$(caddy hash-password --plaintext "$APP_PASSWORD")"
+export APP_PASSWORD_HASH
+caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+caddy run --config /etc/caddy/Caddyfile --adapter caddyfile >/dev/null 2>&1 &
 
 exec streamlit run /MoneyPrinterTurbo/webui/Main.py \
     --server.address=127.0.0.1 \
