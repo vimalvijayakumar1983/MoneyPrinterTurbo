@@ -1,0 +1,13 @@
+:8080 {
+    @health path /healthz
+    handle @health {
+        respond "ok" 200
+    }
+
+    handle {
+        basic_auth {
+            {$APP_USERNAME} {$APP_PASSWORD_HASH}
+        }
+        reverse_proxy 127.0.0.1:8501
+    }
+}
